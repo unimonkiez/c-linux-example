@@ -1,0 +1,34 @@
+Once we ran the server it posted that it listens for requests as shown below:
+./build/net_server.o &
+[1] 4757
+noy@noy-lap:~/dev/c-linux-example$ Server is alive and waiting for socket connection from client.
+
+After that we ran the client and saw a bunch of lines being printed to the terminal as shown below:
+./build/net_client.o 
+Client is alive and establishing socket connection.
+Server has written 1 to socket.
+Server has written 2 to socket.
+Server has written 3 to socket.
+Server has written 4 to socket.
+Server has written 5 to socket.
+Server has written 6 to socket.
+Server has written 7 to socket.
+Server has written 8 to socket.
+Server has written 9 to socket.
+Server has written 10 to socket.
+Exiting now.
+Client has received 1 from socket.
+Client has received 2 from socket.
+Client has received 3 from socket.
+Client has received 4 from socket.
+Client has received 5 from socket.
+Client has received 6 from socket.
+Client has received 7 from socket.
+Client has received 8 from socket.
+Client has received 9 from socket.
+Client has received 10 from socket.
+Exiting now.
+[1]+  Done                    ./build/net_server.o
+
+We can see the client establishing connection, server sending a bunch of response all together to the client (batched responses).
+After that the clients prints those responses. 
