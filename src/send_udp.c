@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <strings.h>
 #include <unistd.h>
+#include <stdio.h>
+#define NAME 12345
 
 int main(int argc, char *argv[])
 {
@@ -13,7 +15,7 @@ int main(int argc, char *argv[])
   int socket_fd;
   struct sockaddr_in  dest;
   struct hostent *hostptr;
-  struct { char head; u_long body; char tail; } msgbuf;
+  struct { char head; u_long  body; char tail;} out_msg, in_msg;
 
   // Create socket for communication
   socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
@@ -28,13 +30,19 @@ int main(int argc, char *argv[])
   dest.sin_port = htons((u_short)0x3333);
 
   // Create the message
-  msgbuf.head = '<';
-  msgbuf.body = htonl(getpid()); /* IMPORTANT! */
-  msgbuf.tail = '>';
+  out_msg.head = '<';
+  out_msg.body = htonl(NAME);
+  out_msg.tail = '>';
 
   // Send the message to the socket 
-  sendto(socket_fd,&msgbuf,sizeof(msgbuf),0,(struct sockaddr *)&dest,
+  sendto(socket_fd,&out_msg,sizeof(out_msg),0,(struct sockaddr *)&dest,
                   sizeof(dest));
+  printf("Client sent data ::%c%ld%c\n",out_msg.head, (long) ntohl(out_msg.body), out_msg.tail); 
+  // Receives a message and store it into in_msg varibale
+  recvfrom(socket_fd,&in_msg,sizeof(in_msg),0,(struct sockaddr *)&dest, sizeof(dest));
+
+  // Prints the message
+  printf("Client got data ::%c%ld%c\n",in_msg.head,(long) ntohl(in_msg.body),in_msg.tail); 
 
   return 0;
 }

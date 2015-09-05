@@ -8,6 +8,7 @@
 #include <strings.h>
 #include <unistd.h>
 #include <stdio.h>
+#define NAME 54321
 
 
 void printsin(struct sockaddr_in *s, char *str1, char *str2) {
@@ -24,7 +25,8 @@ int main(int argc, char *argv[])
   // Define varibales
   int socket_fd, cc, fsize;
   struct sockaddr_in  s_in, from;
-  struct { char head; u_long  body; char tail;} msg;
+  struct { char head; u_long  body; char tail;} out_msg, in_msg;
+
 
   // Create socket for communication
   socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
@@ -46,12 +48,22 @@ int main(int argc, char *argv[])
   for(;;) {
     fsize = sizeof(from);
 
-    // Receives a message and store it into msg varibale
-    cc = recvfrom(socket_fd,&msg,sizeof(msg),0,(struct sockaddr *)&from,&fsize);
+    // Receives a message and store it into in_msg varibale
+    cc = recvfrom(socket_fd,&in_msg,sizeof(in_msg),0,(struct sockaddr *)&from,&fsize);
     printsin( &from, "recv_udp: ", "Packet from:");
 
     // Prints the message
-    printf("Got data ::%c%ld%c\n",msg.head,(long) ntohl(msg.body),msg.tail); 
+    printf("Server got data ::%c%ld%c\n",in_msg.head,(long) ntohl(in_msg.body),in_msg.tail); 
+    fflush(stdout);
+
+    // Create the message
+    out_msg.head = '<';
+    out_msg.body = htonl(NAME);
+    out_msg.tail = '>';
+
+    // Send the message to the socket 
+    sendto(socket_fd,&out_msg,sizeof(out_msg),0,(struct sockaddr *)&from, &fsize);
+    printf("Server sent data ::%c%ld%c\n",out_msg.head, (long) ntohl(out_msg.body), out_msg.tail); 
     fflush(stdout);
   }
   
