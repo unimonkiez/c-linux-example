@@ -1,4 +1,3 @@
-
 #include <sys/types.h>
 #include <unistd.h>          
 #include <stdio.h>
@@ -9,8 +8,9 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #define SIM_LENGTH 10 
-#define IP_ADDRESS "?????" 
+#define IP_ADDRESS "127.0.0.1" 
 #define PORT 1337 
+#define CLIENT_NAME "Noy_client"
 
 int main(void)
 { 
@@ -18,6 +18,7 @@ int main(void)
   struct sockaddr_in cli_name; 
   int count;
   int value; 
+  char* serverName;
 
   printf("Client is alive and establishing socket connection.\n");
   
@@ -44,8 +45,11 @@ int main(void)
 
 
   for (count = 1; count <= SIM_LENGTH; count++)
-    { read(sock, &value, 4);
-      printf("Client has received %d from socket.\n", value);
+    { 
+      sendto(sock,&CLIENT_NAME,sizeof(CLIENT_NAME),0,(struct sockaddr *)&cli_name,
+                  sizeof(cli_name));
+      read(sock, &serverName, sizeof(serverName));
+      printf("Client has received %s from socket.\n", serverName);
     }
 
   printf("Exiting now.\n");
