@@ -1,1 +1,5 @@
-mkdir build;  for r in src/*.c; do gcc src/send_udp.c -o build/send_udp; done
+rm -rf build;
+mkdir build;
+for fileName in src/*.c; 
+	do gcc ${fileName} -o build/$(basename ${fileName%.*}.o); 
+done
